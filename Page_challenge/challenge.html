@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="../image_index/logo_icon.png" type="image/x-icon">
+    <title>Challenge Battle - Dokkan Battle</title>
+    <style>
+        /* Styles généraux */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            background-image: url('https://image.noelshack.com/fichiers/2017/52/4/1514416914-test.png');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-top: 80px;
+        }
+
+        /* Barre de navigation */
+        .navbar {
+            width: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            color: #fff;
+            padding: 10px 0;
+            text-align: center;
+            font-size: 20px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .navbar-title {
+            margin: 0;
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: red; /* Modification ici pour mettre le texte en rouge */
+        }
+
+        .nav-links {
+            display: flex;
+            justify-content: flex-start;
+            width: 100%;
+            margin-left: 20px;
+            margin-top: auto;
+        }
+
+        .nav-links a {
+            color: #fff;
+            text-decoration: none;
+            margin-right: 10px;
+            font-size: 16px;
+            transition: color 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: #28a745;
+        }
+
+        /* Centrage des boutons Ajouter/Supprimer un joueur dans la barre de navigation */
+        .navbar-buttons {
+            margin-left: auto;
+            margin-right: 20px;
+        }
+
+        .navbar-buttons .button {
+            margin: 0 10px;
+        }
+
+        /* Section de contenu */
+        .container {
+            text-align: center;
+            margin-top: 100px;
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 20px;
+            border-radius: 10px;
+            width: 80%;
+            max-width: 800px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .button {
+            padding: 10px 20px;
+            font-size: 16px;
+            margin: 10px;
+            cursor: pointer;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+        }
+
+        .button:disabled {
+            background-color: gray;
+            cursor: not-allowed;
+        }
+
+        .current-image-container {
+            margin: 10px 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 150px;
+            height: 150px;
+            transform: rotate(45deg);
+            overflow: hidden;
+            margin-top: 20px;
+        }
+
+        .current-image-container img {
+            width: 150px;
+            height: 150px;
+            transform: rotate(-45deg);
+            display: none;
+        }
+
+        /* Ligne de joueur : texte à gauche et historique sous le nom */
+        .player-line {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            margin-bottom: 20px;
+            width: 100%;
+        }
+
+        .player-line h3 {
+            margin: 0;
+            text-align: left;
+        }
+
+        /* Style du bouton de reset pour qu'il soit à côté du nom du joueur */
+        .reset-button {
+            margin-left: 10px;
+            padding: 5px 10px;
+            font-size: 14px;
+            background-color: #f44336;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .reset-button:hover {
+            background-color: #d32f2f;
+        }
+
+        .history {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: flex-start;
+            margin-top: 10px;
+            gap: 10px;
+            padding-left: 20px;
+        }
+
+        .history img {
+            width: 80px;
+            height: 80px;
+            margin: 5px;
+            border-radius: 5px;
+        }
+
+        .centered-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            text-align: center;
+            justify-content: center;
+        }
+    </style>
+</head>
+<body>
+
+<div class="navbar">
+    <p class="navbar-title">Tirages Dokkan Battle</p>
+    <div class="nav-links">
+        <a href="../index.html" id="randomRushLink">Random Rush</a>
+        <a href="challenge.html" class="active" id="challengeBattleLink">Challenge Battle</a>
+    </div>
+
+    <div class="navbar-buttons">
+        <button id="addPlayerButton" class="button" onclick="addPlayer()">+</button>
+        <button id="removePlayerButton" class="button" onclick="removePlayer()">-</button>
+    </div>
+</div>
+
+<div class="container">
+    <div class="centered-section">
+        <div id="title">Aucun joueur</div>
+
+        <div class="current-image-container" id="currentImageContainer">
+            <img id="currentImage" src="" alt="Image actuelle">
+        </div>
+    </div>
+
+    <button id="generateButton" class="button" onclick="generateImage()" disabled>Générer une image</button>
+
+    <div id="playersContainer"></div>
+</div>
+
+<script>
+    const images = [
+        'Extec.webp', 'Expui.webp', 'Exagi.webp',
+        'Exend.webp', 'Exint.webp', 'Sptec.webp',
+        'Sppui.webp', 'Spagi.webp', 'Spint.webp',
+        'Spend.webp', 'Rainbow.webp'
+    ];
+
+    const players = [];
+    const totalImages = images.length;
+    const imageFolderPath = '../images/';
+    let currentTurn = 0;
+    const maxHistory = 6;
+
+    function initializePlayers() {
+        addPlayer();
+    }
+
+    function addPlayer() {
+        if (players.length < 6) {
+            const playerIndex = players.length + 1;
+            players.push({
+                id: playerIndex,
+                history: [],
+            });
+            createPlayerLine(playerIndex);
+            updateTitle();
+            updateGenerateButtonState();
+        }
+    }
+
+    function removePlayer() {
+        if (players.length > 0) {
+            const removedPlayer = players.pop();
+            document.getElementById(`playerLine${removedPlayer.id}`).remove();
+            updateTitle();
+            updateGenerateButtonState();
+        }
+    }
+
+    function createPlayerLine(playerIndex) {
+        const playerLine = document.createElement('div');
+        playerLine.className = 'player-line';
+        playerLine.id = `playerLine${playerIndex}`;
+
+        const playerName = document.createElement('h3');
+        playerName.textContent = `Joueur ${playerIndex}`;
+
+        const resetButton = document.createElement('button');
+        resetButton.className = 'reset-button';
+        resetButton.textContent = 'Reset';
+        resetButton.onclick = () => resetPlayerHistory(playerIndex);
+
+        const historyContainer = document.createElement('div');
+        historyContainer.className = 'history';
+        historyContainer.id = `historyPlayer${playerIndex}`;
+
+        playerLine.appendChild(playerName);
+        playerLine.appendChild(resetButton);
+        playerLine.appendChild(historyContainer);
+
+        document.getElementById('playersContainer').appendChild(playerLine);
+    }
+
+    function resetPlayerHistory(playerIndex) {
+        const player = players.find(p => p.id === playerIndex);
+        player.history = [];
+        document.getElementById(`historyPlayer${playerIndex}`).innerHTML = '';
+        updateGenerateButtonState();
+    }
+
+    function updateTitle() {
+        const activePlayer = players[currentTurn];
+        document.getElementById('title').textContent = `Joueur ${activePlayer.id} - Tour de tirage`;
+    }
+
+    function updateGenerateButtonState() {
+        const allPlayersComplete = players.every(player => player.history.length >= maxHistory);
+        document.getElementById('generateButton').disabled = allPlayersComplete;
+    }
+
+    function updateHistory(playerIndex) {
+        const player = players.find(p => p.id === playerIndex);
+        const historyContainer = document.getElementById(`historyPlayer${playerIndex}`);
+        historyContainer.innerHTML = '';
+
+        player.history.forEach(imagePath => {
+            const img = document.createElement('img');
+            img.src = imagePath;
+            img.alt = 'Image tirée';
+            historyContainer.appendChild(img);
+        });
+    }
+
+    function generateImage() {
+        if (players.length === 0) return;
+
+        let attempts = 0;
+        let currentPlayer = players[currentTurn];
+
+        while (currentPlayer.history.length >= maxHistory && attempts < players.length) {
+            currentTurn = (currentTurn + 1) % players.length;
+            currentPlayer = players[currentTurn];
+            attempts++;
+        }
+
+        if (currentPlayer.history.length < maxHistory) {
+            const randomImage = images[Math.floor(Math.random() * totalImages)];
+            const imagePath = imageFolderPath + randomImage;
+
+            currentPlayer.history.push(imagePath);
+            updateHistory(currentPlayer.id);
+
+            const currentImage = document.getElementById('currentImage');
+            currentImage.src = imagePath;
+            currentImage.style.display = "block";
+        }
+
+        updateGenerateButtonState();
+        currentTurn = (currentTurn + 1) % players.length;
+        updateTitle();
+    }
+
+    initializePlayers();
+</script>
+
+</body>
+</html>
