@@ -43,7 +43,7 @@
             font-size: 24px;
             font-weight: bold;
             margin-bottom: 10px;
-            color: red; /* Modification ici pour mettre le texte en rouge */
+            color: red;
         }
 
         .nav-links {
@@ -66,7 +66,6 @@
             color: #28a745;
         }
 
-        /* Centrage des boutons Ajouter/Supprimer un joueur dans la barre de navigation */
         .navbar-buttons {
             margin-left: auto;
             margin-right: 20px;
@@ -83,7 +82,7 @@
             background-color: rgba(0, 0, 0, 0.7);
             padding: 20px;
             border-radius: 10px;
-            width: 80%;
+            width: 60%;
             max-width: 800px;
             display: flex;
             flex-direction: column;
@@ -106,69 +105,35 @@
             cursor: not-allowed;
         }
 
-        .current-image-container {
-            margin: 10px 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            width: 150px;
-            height: 150px;
-            transform: rotate(45deg);
-            overflow: hidden;
-            margin-top: 20px;
-        }
-
-        .current-image-container img {
-            width: 150px;
-            height: 150px;
-            transform: rotate(-45deg);
-            display: none;
-        }
-
-        /* Ligne de joueur : texte à gauche et historique sous le nom */
-        .player-line {
-            display: flex;
-            flex-direction: column;
-            align-items: flex-start;
-            margin-bottom: 20px;
-            width: 100%;
-        }
-
-        .player-line h3 {
-            margin: 0;
-            text-align: left;
-        }
-
-        /* Style du bouton de reset pour qu'il soit à côté du nom du joueur */
         .reset-button {
-            margin-left: 10px;
-            padding: 5px 10px;
-            font-size: 14px;
-            background-color: #f44336;
+            background-color: red;
             color: white;
             border: none;
+            padding: 5px 10px;
             border-radius: 5px;
             cursor: pointer;
         }
 
         .reset-button:hover {
-            background-color: #d32f2f;
+            background-color: darkred;
         }
 
-        .history {
+        /* Section de l'image actuelle */
+        .current-image-container {
+            margin: 10px 0;
             display: flex;
-            flex-wrap: wrap;
-            justify-content: flex-start;
-            margin-top: 10px;
-            gap: 10px;
-            padding-left: 20px;
+            justify-content: center;
+            align-items: center;
+            width: 120px;  
+            height: 120px; 
+            overflow: hidden;
+            margin-top: 20px;
         }
 
-        .history img {
-            width: 80px;
-            height: 80px;
-            margin: 5px;
-            border-radius: 5px;
+        .current-image-container img {
+            width: 120px;  
+            height: 120px; 
+            display: block;
         }
 
         .centered-section {
@@ -178,6 +143,76 @@
             width: 100%;
             text-align: center;
             justify-content: center;
+        }
+
+        .text-area-container {
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            margin-top: 20px;
+            width: 100%; 
+            gap: 20px;
+        }
+
+        .text-area-container textarea {
+            width: 150px;
+            height: 60px;
+            padding: 10px;
+            font-size: 16px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
+        }
+
+        .generate-button-container {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        #generatedText {
+            margin-bottom: 10px;
+            color: white;
+        }
+
+        /* Styles pour les cases noires */
+        .text-container, .timer-container {
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 20px;
+            border-radius: 10px;
+            width: 100%; /* Utiliser 100% pour remplir l'espace disponible */
+            max-width: 600px; 
+            margin-top: 20px; 
+            text-align: center; 
+        }
+
+        /* Style pour le minuteur */
+        .timer {
+            font-size: 24px; 
+            color: #fff;
+            margin-bottom: 10px;
+        }
+
+        .start-timer-button, .stop-timer-button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            margin-top: 10px; 
+        }
+
+        .start-timer-button:hover, .stop-timer-button:hover {
+            background-color: #0056b3;
+        }
+
+        /* Ajout d'un espace en bas de la section du minuteur */
+        .timer-container {
+            margin-bottom: 30px; /* Espace ajouté */
         }
     </style>
 </head>
@@ -197,11 +232,12 @@
 </div>
 
 <div class="container">
+    <!-- Section de génération d'image -->
     <div class="centered-section">
         <div id="title">Aucun joueur</div>
 
         <div class="current-image-container" id="currentImageContainer">
-            <img id="currentImage" src="" alt="Image actuelle">
+            <img id="currentImage" src="" alt="Image actuelle" style="display: none;"> <!-- Masquer initialement -->
         </div>
     </div>
 
@@ -209,6 +245,26 @@
 
     <div id="playersContainer"></div>
 </div>
+
+<!-- Section séparée pour la génération de texte -->
+<div class="text-container"> 
+    <div class="text-area-container">
+        <textarea id="textInput" placeholder="Écrivez un nombre..."></textarea>
+        <div class="generate-button-container">
+            <div id="generatedText"> </div>
+            <button id="generateTextButton" class="button" onclick="generateText()">Générer</button>
+        </div>
+    </div>
+</div>
+
+<!-- Section pour le minuteur -->
+<div class="timer-container">
+    <div class="timer" id="timerDisplay">02:00</div>
+    <button class="start-timer-button" onclick="startTimer()">Démarrer le minuteur</button>
+    <button class="stop-timer-button" onclick="stopTimer()">Arrêter le minuteur</button>
+</div>
+
+<audio id="timerSound" src="path_to_your_sound_file.mp3" preload="auto"></audio> <!-- Remplacez par le chemin de votre fichier audio -->
 
 <script>
     const images = [
@@ -223,6 +279,9 @@
     const imageFolderPath = '../images/';
     let currentTurn = 0;
     const maxHistory = 6;
+
+    let timer; // Variable pour le minuteur  
+    let timeLeft = 120; // 2 minutes en secondes
 
     function initializePlayers() {
         addPlayer();
@@ -257,24 +316,23 @@
 
         const playerName = document.createElement('h3');
         playerName.textContent = `Joueur ${playerIndex}`;
+        playerLine.appendChild(playerName);
 
         const resetButton = document.createElement('button');
+        resetButton.textContent = 'Réinitialiser';
         resetButton.className = 'reset-button';
-        resetButton.textContent = 'Reset';
-        resetButton.onclick = () => resetPlayerHistory(playerIndex);
+        resetButton.onclick = () => resetHistory(playerIndex);
+        playerLine.appendChild(resetButton);
 
         const historyContainer = document.createElement('div');
         historyContainer.className = 'history';
         historyContainer.id = `historyPlayer${playerIndex}`;
-
-        playerLine.appendChild(playerName);
-        playerLine.appendChild(resetButton);
         playerLine.appendChild(historyContainer);
 
         document.getElementById('playersContainer').appendChild(playerLine);
     }
 
-    function resetPlayerHistory(playerIndex) {
+    function resetHistory(playerIndex) {
         const player = players.find(p => p.id === playerIndex);
         player.history = [];
         document.getElementById(`historyPlayer${playerIndex}`).innerHTML = '';
@@ -300,6 +358,8 @@
             const img = document.createElement('img');
             img.src = imagePath;
             img.alt = 'Image tirée';
+            img.style.width = '70px';  
+            img.style.height = '70px';  
             historyContainer.appendChild(img);
         });
     }
@@ -325,12 +385,54 @@
 
             const currentImage = document.getElementById('currentImage');
             currentImage.src = imagePath;
-            currentImage.style.display = "block";
+            currentImage.style.display = "block"; 
         }
 
         updateGenerateButtonState();
         currentTurn = (currentTurn + 1) % players.length;
         updateTitle();
+    }
+
+    function generateText() {
+        const textInput = document.getElementById('textInput').value;
+        const generatedTextDiv = document.getElementById('generatedText');
+
+        if (textInput) {
+            const lines = textInput.split('\n');
+            const randomLine = lines[Math.floor(Math.random() * lines.length)];
+            generatedTextDiv.textContent = randomLine;
+        } else {
+            generatedTextDiv.textContent = 'Veuillez écrire quelque chose dans la zone de texte.';
+        }
+    }
+
+    function startTimer() {
+        timeLeft = 120; // Réinitialise le minuteur à 2 minutes  
+        document.getElementById('timerDisplay').textContent = formatTime(timeLeft);
+        timer = setInterval(updateTimer, 1000); // Met à jour chaque seconde  
+    }
+
+    function stopTimer() {
+        clearInterval(timer);
+        timeLeft = 0; // Réinitialise le minuteur  
+        document.getElementById('timerDisplay').textContent = "02:00"; // Réinitialise l'affichage  
+    }
+
+    function updateTimer() {
+        if (timeLeft <= 0) {
+            clearInterval(timer);
+            document.getElementById('timerDisplay').textContent = "Temps écoulé !";
+            document.getElementById('timerSound').play(); // Joue le son  
+        } else {
+            timeLeft--;
+            document.getElementById('timerDisplay').textContent = formatTime(timeLeft);
+        }
+    }
+
+    function formatTime(seconds) {
+        const minutes = Math.floor(seconds / 60);
+        const remainingSeconds = seconds % 60;
+        return `${String(minutes).padStart(2, '0')}:${String(remainingSeconds).padStart(2, '0')}`;
     }
 
     initializePlayers();
